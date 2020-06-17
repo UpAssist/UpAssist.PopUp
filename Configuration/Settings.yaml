@@ -1,0 +1,10 @@
+Neos:
+  Neos:
+    userInterface:
+      translation:
+        autoInclude:
+          UpAssist.PopUp:
+            - 'NodeTypes/*'
+    fusion:
+      autoInclude:
+        UpAssist.PopUp: true

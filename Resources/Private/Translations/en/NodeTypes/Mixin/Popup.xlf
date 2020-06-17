@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="" product-name="UpAssist.PopUp" source-language="en" datatype="plaintext">
+    <body>
+      <trans-unit id="tabs.popup" xml:space="preserve">
+          <source>Popup settings</source>
+      </trans-unit>
+      <trans-unit id="groups.popup" xml:space="preserve">
+          <source>Popup settings</source>
+      </trans-unit>
+      <trans-unit id="properties.delay" xml:space="preserve">
+          <source>Delay</source>
+      </trans-unit>
+      <trans-unit id="properties.delayType" xml:space="preserve">
+          <source>Delay Type</source>
+      </trans-unit>
+      <trans-unit id="properties.delayType.selectBoxEditor.values.seconds" xml:space="preserve">
+          <source>Seconds</source>
+      </trans-unit>
+      <trans-unit id="properties.delayType.selectBoxEditor.values.clicks" xml:space="preserve">
+          <source>Clicks</source>
+      </trans-unit>
+      <trans-unit id="properties.popup" xml:space="preserve">
+          <source>Select a popup</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "scripts": "babel Resources/Private/Scripts -d Resources/Public/scripts",
+    "styles": "sass Resources/Private/Scss:Resources/Public/styles --style compressed",
+    "build": "BABEL_ENV=production npm run scripts && npm run styles"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.10.1",
+    "@babel/core": "^7.10.2",
+    "@babel/preset-env": "^7.10.2",
+    "babel-preset-minify": "^0.5.1"
+  }
+}

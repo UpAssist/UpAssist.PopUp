@@ -1,0 +1,53 @@
+root.popup {
+  condition = ${q(node).is('[instanceof UpAssist.PopUp:Popup]')}
+  renderer = UpAssist.PopUp:Popup
+}
+
+popup < UpAssist.PopUp:Popup
+
+prototype(UpAssist.PopUp:Popup) >
+prototype(UpAssist.PopUp:Popup) < prototype(Neos.Neos:Page) {
+  body = Neos.Neos:ContentCollection {
+    nodePath = 'main'
+    attributes {
+      data-identifier = ${node.identifier}
+      data-popup = true
+      data-popup-url = Neos.Neos:NodeUri {
+        node = ${q(node)}
+      }
+    }
+  }
+}
+
+prototype(Neos.Neos:Page) {
+  head.stylesheets.popup = Neos.Fusion:Tag {
+//    @Todo can we make this cookie aware?
+//    @if.isPopup = ${q(node).property('popup') ? TRUE : FALSE}
+    tagName = 'link'
+    attributes {
+      rel = 'stylesheet'
+      href = Neos.Fusion:ResourceUri {
+        path = ${'resource://UpAssist.PopUp/Public/styles/popup.css'}
+      }
+    }
+  }
+
+  bodyTag.attributes {
+    data-popup = Neos.Neos:NodeUri {
+      node = ${q(node).property('popup')}
+      @if.isPopup = ${q(node).property('popup') ? TRUE : FALSE}
+    }
+    data-popup-delaytype = ${q(node).property('delayType')}
+    data-popup-delay = ${q(node).property('delay') ? q(node).property('delay') : 60}
+    data-popup-delay.@if.isPopup = ${q(node).property('popup') ? TRUE : FALSE}
+  }
+
+  body.javascripts.popup = Neos.Fusion:Tag {
+    tagName = 'script'
+    attributes {
+      src = Neos.Fusion:ResourceUri {
+        path = ${'resource://UpAssist.PopUp/Public/scripts/popup.js'}
+      }
+    }
+  }
+}

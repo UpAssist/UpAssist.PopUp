@@ -1,0 +1,12 @@
+'UpAssist.PopUp:Popup':
+  superTypes:
+    'Neos.Neos:Document': true
+  childNodes:
+    main:
+      type: 'Neos.Neos:ContentCollection'
+  ui:
+    label: i18n
+    icon: icon-fire
+  properties:
+    _hiddenInIndex:
+      defaultValue: true

@@ -1,0 +1,19 @@
+{
+  "description": "A package adding popup functionality to your Neos website",
+  "type": "neos-package",
+  "name": "upassist/popup",
+  "require": {
+    "neos/flow": "*",
+    "neos/neos": "^4.3.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "UpAssist\\PopUp\\": "Classes/"
+    }
+  },
+  "extra": {
+    "neos": {
+      "package-key": "UpAssist.PopUp"
+    }
+  }
+}

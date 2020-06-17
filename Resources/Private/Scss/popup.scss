@@ -1,0 +1,52 @@
+:root {
+  --popup-background-color: rgba(0,0,0,.5);
+  --popup-content-background-color: #fff;
+}
+
+.popup-modal {
+  &__outer {
+    position: fixed;
+    display: grid;
+    height: 100vh;
+    width: 100vw;
+    background: var(--popup-background-color);
+    top: 0;
+    left: 0;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 11000;
+
+    &.is-active {
+      pointer-events: all;
+      opacity: 1;
+    }
+
+    .popup-modal__close-button {
+      display: flex;
+      width: 2rem;
+      height: 2rem;
+      justify-self: end;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin: 0 -1rem -1rem 0;
+      border-radius: 50%;
+      line-height: 1;
+      padding: .25rem;
+      z-index: 1;
+    }
+  }
+
+  &__inner {
+    background: var(--popup-content-background-color);
+    padding: 2rem;
+    width: 50vw;
+    min-width: 300px;
+    min-height: 200px;
+    max-height: calc(100vh - 4rem);
+    overflow: auto;
+  }
+}
