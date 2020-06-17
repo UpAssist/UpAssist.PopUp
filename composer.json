@@ -4,7 +4,7 @@
   "name": "upassist/popup",
   "require": {
     "neos/flow": "*",
-    "neos/neos": "^4.3.*"
+    "neos/neos": "*"
   },
   "autoload": {
     "psr-4": {
