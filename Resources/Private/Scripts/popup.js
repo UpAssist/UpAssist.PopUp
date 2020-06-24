@@ -98,6 +98,7 @@ function initializePopup() {
         const container = document.querySelector('.popup-modal__inner');
 
         container.insertAdjacentElement('beforeend', html.querySelector('body > div'));
+        window.dispatchEvent(new CustomEvent('popupContentLoaded'));
       });
   }
 
