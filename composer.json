@@ -1,19 +1,22 @@
 {
-  "description": "A package adding popup functionality to your Neos website",
-  "type": "neos-package",
-  "name": "upassist/popup",
-  "require": {
-    "neos/flow": "*",
-    "neos/neos": "*"
-  },
-  "autoload": {
-    "psr-4": {
-      "UpAssist\\PopUp\\": "Classes/"
+    "description": "A package adding popup functionality to your Neos website",
+    "type": "neos-package",
+    "name": "upassist/popup",
+    "require": {
+        "neos/flow": "*",
+        "neos/neos": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "UpAssist\\PopUp\\": "Classes/"
+        }
+    },
+    "extra": {
+        "neos": {
+            "package-key": "UpAssist.PopUp"
+        },
+        "applied-flow-migrations": [
+            "TYPO3.FLOW3-201201261636"
+        ]
     }
-  },
-  "extra": {
-    "neos": {
-      "package-key": "UpAssist.PopUp"
-    }
-  }
 }
