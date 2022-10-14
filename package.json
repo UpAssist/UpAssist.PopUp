@@ -1,5 +1,5 @@
 {
-    "version": "7.1.0",
+    "version": "7.1.1",
     "scripts": {
         "scripts": "babel Resources/Private/Scripts -d Resources/Public/scripts",
         "styles": "sass Resources/Private/Scss:Resources/Public/styles --style compressed",
