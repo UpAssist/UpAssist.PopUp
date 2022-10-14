@@ -1,5 +1,6 @@
 {
     "version": "7.1.1",
+    "license": "MIT",
     "scripts": {
         "scripts": "babel Resources/Private/Scripts -d Resources/Public/scripts",
         "styles": "sass Resources/Private/Scss:Resources/Public/styles --style compressed",
