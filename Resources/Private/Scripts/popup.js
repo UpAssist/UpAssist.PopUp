@@ -1,4 +1,4 @@
-function initializePopup() {
+ function initializePopup() {
   // Setup
   const popup = document.querySelector('[data-popup]');
   let popupsArray = getCookie('u_popups') ? JSON.parse(getCookie('u_popups')) : [];
@@ -58,7 +58,7 @@ function initializePopup() {
         clicks: popupDelayType === 'clicks' ? 1 : null,
         shown: false
       });
-      setCookie('u_popups', JSON.stringify(popupsArray));
+      setCookie('u_popups', JSON.stringify(popupsArray), 365);
       console.info(`Popup ${popupUri} registered`);
     }
   }
@@ -72,7 +72,7 @@ function initializePopup() {
       }
       return object;
     });
-    setCookie('u_popups', JSON.stringify(updatedPopups));
+    setCookie('u_popups', JSON.stringify(updatedPopups), 365);
   }
 
   function popupHasShown(popupUri) {
@@ -84,7 +84,7 @@ function initializePopup() {
   function markPopupAsShown(popupUri) {
     const popups = JSON.parse(getCookie('u_popups'));
     const updatedPopups = popups.map(object => object.url === popupUri ? {...object, shown: true} : object);
-    setCookie('u_popups', JSON.stringify(updatedPopups));
+    setCookie('u_popups', JSON.stringify(updatedPopups), 365);
   }
 
   function renderPopup(popupUri) {
