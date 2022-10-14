@@ -9,7 +9,7 @@
         "release:major": "yarn build && npx standard-version -t '' -r major && git push --follow-tags origin master"
     },
     "devDependencies": {
-        "@babel/cli": "^7.10.1",
+        "@babel/cli": "^7.19.3",
         "@babel/core": "^7.10.2",
         "@babel/preset-env": "^7.10.2",
         "babel-preset-minify": "^0.5.1"
