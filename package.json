@@ -5,7 +5,7 @@
         "scripts": "babel Resources/Private/Scripts -d Resources/Public/scripts",
         "watch:scripts": "babel Resources/Private/Scripts --watch --out-dir Resources/Public/scripts",
         "styles": "sass Resources/Private/Scss:Resources/Public/styles --style compressed",
-        "build": "BABEL_ENV=production npm run scripts && npm run styles",
+        "build": "BABEL_ENV=production npm run scripts && npm run styles && git add --all && git commit -m 'chore: build files'",
         "release:patch": "yarn build && npx standard-version -t '' -r patch && git push --follow-tags origin master",
         "release:minor": "yarn build && npx standard-version -t '' -r minor && git push --follow-tags origin master",
         "release:major": "yarn build && npx standard-version -t '' -r major && git push --follow-tags origin master"
