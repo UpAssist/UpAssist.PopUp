@@ -1,4 +1,4 @@
- function initializePopup() {
+function initializePopup() {
   // Setup
   const popup = document.querySelector('[data-popup]');
   let popupsArray = getCookie('u_popups') ? JSON.parse(getCookie('u_popups')) : [];
@@ -14,22 +14,11 @@
 
     registerPopup(popupUri, popupDelay, popupDelayType);
 
-    switch (popupDelayType) {
-      case 'clicks': // Skip rendering until clicks have resolved
-        break;
-      case 'seconds':
-      default:
-        renderPopupContainer();
-        listenForCloseHandlers();
-        renderPopup(popupUri);
-        setTimeout(() => showPopup(popupUri), popupDelay * 1000);
-        break;
-    }
   }
 
   // Popups loaded from cookies
   if (popupsArray.filter(object => object.delayType === 'clicks' && object.shown === false).length > 0) {
-    const clickPopups = popupsArray.filter(object => object.delayType === 'clicks');
+    const clickPopups = popupsArray.filter(object => object.delayType === 'clicks' && object.shown === false);
     if (clickPopups.length > 0) {
       renderPopupContainer();
       listenForCloseHandlers();
@@ -38,6 +27,18 @@
           renderPopup(clickPopup.url);
           setTimeout(() => showPopup(clickPopup.url), 1000);
         }
+      })
+    }
+  }
+
+  if (popupsArray.filter(object => object.delayType === 'seconds' && object.shown === false).length > 0) {
+    const popups = popupsArray.filter(object => object.delayType === 'seconds' && object.shown === false);
+    if (popups.length > 0) {
+      renderPopupContainer();
+      listenForCloseHandlers();
+      popups.forEach(popup => {
+        renderPopup(popup.url);
+        setTimeout(() => showPopup(popup.url), popup.delay * 1000);
       })
     }
   }
