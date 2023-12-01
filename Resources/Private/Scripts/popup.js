@@ -7,7 +7,7 @@ function initializePopup() {
   if (!popup && popupsArray.length === 0) return;
 
   // Popups loaded in the page (used to register and to show popups with the delaytype `seconds`)
-  if (popup) {
+  if (popup && popup.dataset.popup) {
     const popupUri = popup.dataset.popup;
     const popupDelay = popup.dataset.popupDelay;
     const popupDelayType = popup.dataset.popupDelaytype;
