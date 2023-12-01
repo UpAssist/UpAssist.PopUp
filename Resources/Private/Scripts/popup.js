@@ -169,4 +169,9 @@ function initializePopup() {
 
 }
 
-initializePopup();
+window.addEventListener("DOMContentLoaded", () => {
+	const inNeosBackend = document.querySelector('.neos-backend')
+	if (!inNeosBackend) {
+		initializePopup()
+	}
+})
