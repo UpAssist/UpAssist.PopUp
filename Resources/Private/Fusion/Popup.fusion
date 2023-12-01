@@ -40,6 +40,8 @@ prototype(Neos.Neos:Page) {
     data-popup-delaytype = ${q(node).property('delayType')}
     data-popup-delay = ${q(node).property('delay') ? q(node).property('delay') : 60}
     data-popup-delay.@if.isPopup = ${q(node).property('popup') ? TRUE : FALSE}
+    data-popup-language = ${node.dimensions.language}
+    data-popup-language.@if.hasLanguageDimension = ${node.dimensions.language}
   }
 
   body.javascripts.popup = Neos.Fusion:Tag {
