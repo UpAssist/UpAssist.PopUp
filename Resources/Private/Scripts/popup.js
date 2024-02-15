@@ -4,7 +4,11 @@ function initializePopup() {
 	let popupsArray = getCookie('u_popups') ? JSON.parse(getCookie('u_popups')) : []
 
 	// Filter to only show the current language
-	popupsArray = popupsArray.filter(object => object.language === popup.dataset.popupLanguage)
+	popupsArray = popupsArray.filter(object => {
+		if (!object || !popup) return
+
+		object.language === popup.dataset.popupLanguage
+	})
 
 	// If no popup is stored or loaded...
 	if (!popup && popupsArray.length === 0) return
