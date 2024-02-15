@@ -8,7 +8,6 @@ Currently supports two types of pupop triggering: after X seconds or after X cli
 ## Installation
 In your site package require this package `"upassist/popup":"*"`.
 Run `composer require upassist/popup` in your distribution package.
-Currently only `dev-master` is available. As soon as this is sort of stable we will lock it.
 
 ## Configuration
 Take a look at the Fusion files for configuring styles and js loading.
