@@ -1,184 +1,149 @@
 function initializePopup() {
-	// Setup
-	const popup = document.querySelector('[data-popup]')
-	let popupsArray = getCookie('u_popups') ? JSON.parse(getCookie('u_popups')) : []
+  const popup = document.querySelector('[data-popup]')
+  const rawPopups = getCookie('u_popups')
+  let popupsArray = rawPopups ? JSON.parse(rawPopups) : []
 
-	// Filter to only show the current language
-	popupsArray = popupsArray.filter(object => {
-		if (!object || !popup) return
+  // Filter based on language if popup exists
+  if (popup) {
+    const currentLang = popup.dataset.popupLanguage
+    popupsArray = popupsArray.filter(p => p?.language === currentLang)
+  }
 
-		object.language === popup.dataset.popupLanguage
-	})
+  if (!popup && popupsArray.length === 0) return
 
-	// If no popup is stored or loaded...
-	if (!popup && popupsArray.length === 0) return
+  // Register newly loaded popup
+  if (popup?.dataset.popup) {
+    const { popup: popupUri, popupDelay, popupDelaytype: popupDelayType, popupLanguage } = popup.dataset
+    registerPopup(popupUri, popupDelay, popupDelayType, popupLanguage)
+  }
 
-	// Popups loaded in the page (used to register and to show popups with the delaytype `seconds`)
-	if (popup && popup.dataset.popup) {
-		const popupUri = popup.dataset.popup
-		const popupDelay = popup.dataset.popupDelay
-		const popupDelayType = popup.dataset.popupDelaytype
-		const popupLanguage = popup.dataset.popupLanguage
-		registerPopup(popupUri, popupDelay, popupDelayType, popupLanguage)
-	}
+  const clickPopups = popupsArray.filter(p => p.delayType === 'clicks' && !p.shown && p.clicks > p.delay)
+  const timedPopups = popupsArray.filter(p => p.delayType === 'seconds' && !p.shown)
 
-	// Popups loaded from cookies
-	if (popupsArray.filter(object => object.delayType === 'clicks' && object.shown === false).length > 0) {
-		const clickPopups = popupsArray.filter(object => object.delayType === 'clicks' && object.shown === false)
-		if (clickPopups.length > 0) {
-			renderPopupContainer()
-			listenForCloseHandlers()
-			clickPopups.forEach(clickPopup => {
-				if (clickPopup.clicks > clickPopup.delay) {
-					renderPopup(clickPopup.url)
-					setTimeout(() => showPopup(clickPopup.url), 1000)
-				}
-			})
-		}
-	}
+  if (clickPopups.length > 0 || timedPopups.length > 0) {
+    renderPopupContainer()
+    listenForCloseHandlers()
+  }
 
-	if (popupsArray.filter(object => object.delayType === 'seconds' && object.shown === false).length > 0) {
-		const popups = popupsArray.filter(object => object.delayType === 'seconds' && object.shown === false)
-		if (popups.length > 0) {
-			renderPopupContainer()
-			listenForCloseHandlers()
-			popups.forEach(popup => {
-				renderPopup(popup.url)
-				setTimeout(() => showPopup(popup.url), popup.delay * 1000)
-			})
-		}
-	}
+  clickPopups.forEach(p => {
+    renderPopup(p.url)
+    setTimeout(() => showPopup(p.url), 1000)
+  })
 
-	function renderPopupContainer() {
-		const popModalHTML = document.querySelector('.popup-modal__outer') ? document.querySelector('.popup-modal__outer') : document.createElement('div')
-		popModalHTML.innerHTML = '<button class="popup-modal__close-button">&times</button><div class="popup-modal__inner"></div>'
-		popModalHTML.className = 'popup-modal__outer'
-		document.querySelector('body').insertAdjacentElement('beforeend', popModalHTML)
-	}
+  timedPopups.forEach(p => {
+    renderPopup(p.url)
+    setTimeout(() => showPopup(p.url), p.delay * 1000)
+  })
 
-	function registerPopup(popupUri, popupDelay, popupDelayType, popupLanguage) {
-		if (popupsArray.find(object => object.url === popupUri) === undefined) {
-			popupsArray.push({
-				url: popupUri,
-				delay: parseInt(popupDelay),
-				delayType: popupDelayType,
-				clicks: popupDelayType === 'clicks' ? 1 : null,
-				shown: false,
-				language: popupLanguage
-			})
-			setCookie('u_popups', JSON.stringify(popupsArray), 365)
-			console.info(`Popup ${popupUri} registered`)
-		}
-	}
+  // Track clicks to trigger "clicks" delayed popups
+  document.querySelectorAll('a').forEach(anchor =>
+    anchor.addEventListener('click', registerClickIncrementForPopups)
+  )
+  window.addEventListener('beforeunload', registerClickIncrementForPopups)
 
-	function registerClickIncrementForPopups() {
-		const popups = JSON.parse(getCookie('u_popups'))
-		const clickPopups = popups.filter(object => object.delayType === 'clicks')
-		let updatedPopups = popups.map(object => {
-			if (clickPopups.find(clickPopup => clickPopup.url === object.url)) {
-				object.clicks++
-			}
-			return object
-		})
-		setCookie('u_popups', JSON.stringify(updatedPopups), 365)
-	}
+  function registerPopup(popupUri, popupDelay, popupDelayType, popupLanguage) {
+    const delay = parseInt(popupDelay)
+    const existingIndex = popupsArray.findIndex(p =>
+      p.url === popupUri &&
+      p.delayType === popupDelayType &&
+      p.delay === delay
+    )
 
-	function popupHasShown(popupUri) {
-		const popups = JSON.parse(getCookie('u_popups'))
-		const result = popups.map(object => (object.url === popupUri && object.shown === true))
-		return Array.isArray(result) && result[0] === true
-	}
+    // If popup with identical config already exists, do nothing
+    if (existingIndex !== -1) return
 
-	function markPopupAsShown(popupUri) {
-		const popups = JSON.parse(getCookie('u_popups'))
-		const updatedPopups = popups.map(object => object.url === popupUri ? {...object, shown: true} : object)
-		setCookie('u_popups', JSON.stringify(updatedPopups), 365)
-	}
+    // Remove outdated popup with same URL
+    popupsArray = popupsArray.filter(p => p.url !== popupUri)
 
-	function renderPopup(popupUri) {
-		fetch(popupUri)
-			.then(function (res) {
-				return res.text()
-			})
-			.then(function (result) {
-				const parser = new DOMParser()
-				const html = parser.parseFromString(result, "text/html")
-				const container = document.querySelector('.popup-modal__inner')
+    // Register new popup
+    popupsArray.push({
+      url: popupUri,
+      delay,
+      delayType: popupDelayType,
+      clicks: popupDelayType === 'clicks' ? 1 : null,
+      shown: false,
+      language: popupLanguage
+    })
+    setCookie('u_popups', JSON.stringify(popupsArray), 365)
+    console.info(`Popup ${popupUri} registered`)
+  }
 
-				container.insertAdjacentElement('beforeend', html.querySelector('body > div'))
-				window.dispatchEvent(new CustomEvent('popupContentLoaded'))
-			})
-	}
+  function renderPopupContainer() {
+    let container = document.querySelector('.popup-modal__outer') || document.createElement('div')
+    container.innerHTML = '<button class="popup-modal__close-button">&times;</button><div class="popup-modal__inner"></div>'
+    container.className = 'popup-modal__outer'
+    document.body.insertAdjacentElement('beforeend', container)
+  }
 
-	function showPopup(popupUri) {
-		const popupOuterContainer = document.querySelector('.popup-modal__outer')
-		if (popupHasShown(popupUri) === false) {
-			popupOuterContainer.classList.add('is-active')
-		}
-	}
+  function renderPopup(popupUri) {
+    fetch(popupUri)
+      .then(res => res.text())
+      .then(htmlText => {
+        const html = new DOMParser().parseFromString(htmlText, "text/html")
+        document.querySelector('.popup-modal__inner')
+          .insertAdjacentElement('beforeend', html.querySelector('body > div'))
+        window.dispatchEvent(new CustomEvent('popupContentLoaded'))
+      })
+  }
 
-	function closePopup() {
-		const popupOuterContainer = document.querySelector('.popup-modal__outer')
-		const currentPopup = popupOuterContainer.querySelector('[data-popup]')
-		popupOuterContainer.classList.remove('is-active')
-		markPopupAsShown(currentPopup.dataset.popupUrl)
-	}
+  function showPopup(popupUri) {
+    if (!popupHasShown(popupUri)) {
+      document.querySelector('.popup-modal__outer').classList.add('is-active')
+      markPopupAsShown(popupUri)
+    }
+  }
 
-	function listenForCloseHandlers() {
-		const popupOuterContainer = document.querySelector('.popup-modal__outer')
-		popupOuterContainer.addEventListener('click', function (e) {
-			const isOutside = !e.target.closest('.popup-modal__inner')
-			if (isOutside) {
-				closePopup()
-			}
-		})
+  function closePopup() {
+    const container = document.querySelector('.popup-modal__outer')
+    const currentPopup = container.querySelector('[data-popup]')
+    container.classList.remove('is-active')
+    if (currentPopup?.dataset.popupUrl) markPopupAsShown(currentPopup.dataset.popupUrl)
+  }
 
-		window.addEventListener('keydown', function (e) {
-			if (e.key === 'Escape') {
-				closePopup()
-			}
-		})
-	}
+  function listenForCloseHandlers() {
+    document.querySelector('.popup-modal__outer').addEventListener('click', e => {
+      if (!e.target.closest('.popup-modal__inner')) closePopup()
+    })
+    window.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closePopup()
+    })
+  }
 
-	// Setup listening for clicks so we can track them for clickPopups
-	// We pass in the cookie values directly to get live updated values i.o. previous
-	// stored array.
-	const anchors = document.querySelectorAll('a')
-	anchors.forEach(anchor => anchor.addEventListener('click', e => {
-		registerClickIncrementForPopups()
-	}))
-	window.addEventListener('beforeunload', () => {
-		registerClickIncrementForPopups()
-	})
+  function registerClickIncrementForPopups() {
+    const popups = JSON.parse(getCookie('u_popups') || '[]')
+    const updated = popups.map(p =>
+      p.delayType === 'clicks' ? { ...p, clicks: (p.clicks || 0) + 1 } : p
+    )
+    setCookie('u_popups', JSON.stringify(updated), 365)
+  }
 
-	function setCookie(cname, cvalue, exdays) {
-		var d = new Date();
-		d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-		var expires = "expires=" + d.toUTCString();
-		document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-	}
+  function popupHasShown(popupUri) {
+    const popups = JSON.parse(getCookie('u_popups') || '[]')
+    return popups.some(p => p.url === popupUri && p.shown)
+  }
 
-	function getCookie(cname) {
-		var name = cname + "=";
-		var ca = document.cookie.split(';')
-		for (var i = 0; i < ca.length; i++) {
-			var c = ca[i]
-			while (c.charAt(0) === ' ') {
-				c = c.substring(1)
-			}
-			if (c.indexOf(name) === 0) {
-				return c.substring(name.length, c.length)
-			}
-		}
+  function markPopupAsShown(popupUri) {
+    const popups = JSON.parse(getCookie('u_popups') || '[]')
+    const updated = popups.map(p => p.url === popupUri ? { ...p, shown: true } : p)
+    setCookie('u_popups', JSON.stringify(updated), 365)
+  }
 
-		return ''
-	}
+  function setCookie(name, value, days) {
+    const d = new Date()
+    d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000))
+    document.cookie = `${name}=${value};expires=${d.toUTCString()};path=/`
+  }
 
+  function getCookie(name) {
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'))
+    return match ? match[2] : ''
+  }
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-	const inNeosBackend = document.querySelector('.neos-backend')
-	if (!inNeosBackend) {
-		initializePopup()
-	}
-})
+function initializeIfReady() {
+  if (!document.querySelector('.neos-backend')) initializePopup()
+}
+
+document.readyState === 'loading'
+  ? window.addEventListener('DOMContentLoaded', initializeIfReady)
+  : initializeIfReady()
