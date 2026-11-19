@@ -3,13 +3,8 @@
     "type": "neos-package",
     "name": "upassist/popup",
     "require": {
-        "neos/flow": "*",
-        "neos/neos": "*"
-    },
-    "autoload": {
-        "psr-4": {
-            "UpAssist\\PopUp\\": "Classes/"
-        }
+        "neos/neos": "^8.3 || ^9.0",
+        "neos/fusion": "^8.3 || ^9.0"
     },
     "extra": {
         "neos": {
@@ -94,5 +89,6 @@
             "Neos.NodeTypes-20190917101945",
             "Neos.NodeTypes-20200120114136"
         ]
-    }
+    },
+    "license": "MIT"
 }
