@@ -10,10 +10,11 @@ prototype(UpAssist.PopUp:Popup) < prototype(Neos.Neos:Page) {
   body = Neos.Neos:ContentCollection {
     nodePath = 'main'
     attributes {
-      data-identifier = ${node.identifier}
+      # Neos 9: node.aggregateId, Neos 8: node.identifier
+      data-identifier = ${node.aggregateId.value || node.identifier}
       data-popup = true
       data-popup-url = Neos.Neos:NodeUri {
-        node = ${q(node)}
+        node = ${documentNode}
       }
     }
   }
@@ -40,13 +41,17 @@ prototype(Neos.Neos:Page) {
     data-popup-delaytype = ${q(node).property('delayType')}
     data-popup-delay = ${q(node).property('delay') ? q(node).property('delay') : 60}
     data-popup-delay.@if.isPopup = ${q(node).property('popup') ? TRUE : FALSE}
-    data-popup-language = ${node.dimensions.language}
-    data-popup-language.@if.hasLanguageDimension = ${node.dimensions.language}
+    # Neos 8: node.dimensions, Neos 9: node.dimensionSpacePoint
+    data-popup-language = ${node.dimensions.language || node.dimensionSpacePoint.coordinates.language}
+    data-popup-language.@if.hasLanguageDimension = ${node.dimensions.language || node.dimensionSpacePoint.coordinates.language}
   }
 
-  body.javascripts.popup = Neos.Fusion:Tag {
+  # Loaded from the head with defer: many sites replace `body` of Neos.Neos:Page entirely,
+  # which would drop a script registered in body.javascripts.
+  head.javascripts.popup = Neos.Fusion:Tag {
     tagName = 'script'
     attributes {
+      defer = true
       src = Neos.Fusion:ResourceUri {
         path = ${'resource://UpAssist.PopUp/Public/scripts/popup.js'}
       }
