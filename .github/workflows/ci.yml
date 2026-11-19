@@ -1,0 +1,25 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer
+      - run: composer validate --no-check-publish --no-check-lock
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+      - run: yarn install --frozen-lockfile
+      # Run the build steps directly: `yarn build` commits the output itself.
+      - run: BABEL_ENV=production yarn scripts
+      - run: yarn styles
+      - name: Built files are committed
+        run: git diff --exit-code -- Resources/Public
