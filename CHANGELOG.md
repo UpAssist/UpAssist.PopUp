@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [7.2.5](https://github.com/UpAssist/UpAssist.PopUp/compare/7.2.4...7.2.5) (2026-11-23)
+
+
+### Bug Fixes
+
+* remove stale source maps (`popup.js.map`, `popup.css.map`) from `Resources/Public` and build styles without a source map
+
 ### [7.2.4](https://github.com/UpAssist/UpAssist.PopUp/compare/7.2.3...7.2.4) (2026-11-19)
 
 
